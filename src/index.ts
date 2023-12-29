@@ -14,6 +14,8 @@ import { getUserAgent } from "./main/userAgent";
 import { SessionManager } from "./main/managers/SessionManager";
 import { runAutoUpdate } from "./autoUpdate";
 import { getSavedBounds, saveWindowBounds } from "./bounds";
+import { ElectronBlocker } from '@cliqz/adblocker-electron';
+import fetch from 'cross-fetch'; // required 'fetch'
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -40,6 +42,10 @@ const createWindow = (): void => {
     minWidth: 500,
     minHeight: 375,
     ...bounds,
+  });
+  
+  ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
+    blocker.enableBlockingInSession(mainWindow.webContents.session);
   });
 
   if (maximized) {
